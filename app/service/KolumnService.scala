@@ -53,12 +53,11 @@ protected trait KolumnService {
                |INSERT INTO kolumn(project_id,name,position,threshold,created_by_user,is_archive_kolumn)
                |VALUES(
                |${kolumn.projectId},
-                                     |"${kolumn.name}",
-                                                       |${kolumn.position},
-                                                                            |${kolumn.threshold},
-                                                                                                  |${kolumn.createdByUserId},
-                                                                                                                              |${kolumn.isArchiveKolumn}
-                |)
+               |"${kolumn.name}",
+               |${kolumn.position},
+               |${kolumn.threshold},
+               |${kolumn.createdByUserId},
+               |${kolumn.isArchiveKolumn})
             """.stripMargin
           ).executeInsert(scalar[Long].single)
           kolumn.id = Option(insertedKolumn)
