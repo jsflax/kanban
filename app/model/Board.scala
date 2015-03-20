@@ -113,8 +113,13 @@ object Ticket {
  * @param position position in row of columns
  * @param threshold how many issues allowed in column
  */
-case class Kolumn(projectId : Long, var name : String, var position : Int, var threshold : Int, createdByUserId : Long, isArchiveKolumn : Boolean, var id : Option[Long])
-
+case class Kolumn(projectId : Long,
+                  var name : String,
+                  var position : Int,
+                  var threshold : Int,
+                  createdByUserId : Long,
+                  isArchiveKolumn : Boolean,
+                  var id : Option[Long])
 object Kolumn {
   implicit val reads = Json.reads[Kolumn]
   implicit val writes = Json.writes[Kolumn]
@@ -140,8 +145,11 @@ object Kolumn {
  * @param createdByUserId user who created project
  * @param id id of project
  */
-case class Project(boardId : Long, name : String, prefix : String, createdByUserId : Long, var id : Option[Long])
-
+case class Project(boardId : Long,
+                   name : String,
+                   prefix : String,
+                   createdByUserId : Long,
+                   var id : Option[Long])
 object Project {
   implicit val reads = Json.reads[Project]
   implicit val writes = Json.writes[Project]
@@ -163,7 +171,6 @@ object Project {
  * @param id id of board
  */
 case class Board(name : String, id : Option[Long])
-
 object Board {
   implicit val reads = Json.reads[Board]
   implicit val writes = Json.writes[Board]

@@ -1,6 +1,9 @@
 package model
 
 /**
+ * Enum for possible actions to be sent over a socket.
+ * Client uses these as keys to determine what actions
+ * to take on the UI.
  */
 object SocketActions extends Enumeration {
   type SocketActions = String
