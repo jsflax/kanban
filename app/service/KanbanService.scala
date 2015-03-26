@@ -32,13 +32,13 @@ object KanbanService extends BoardService
 
     val authorizedBoards = getBoardsAuthorizedForUser(id.id)
 
-    if (authorizedBoards.size == 0) return createFullBoard
+    if (authorizedBoards.isEmpty) return createFullBoard
 
     authorizedUsers = getAuthorizedUsersForBoards(authorizedBoards.map(_.id.get))
 
     authorizedProjects = getProjectsForBoards(authorizedBoards.map(_.id.get))
 
-    if (authorizedProjects.size == 0) return createFullBoard
+    if (authorizedProjects.isEmpty) return createFullBoard
 
     projectKolumns = getKolumnsForProjects(authorizedProjects.map(_.id.get))
 

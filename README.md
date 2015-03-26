@@ -117,10 +117,73 @@ def transferRectangleAsRedRect(rect: Rect) {
 ```
 Inside our function, we immediately set our ```var newRectangle``` to the passed in value. And then, just to prove
 a point, if it is not of a certain color, we then create a new rect to change it to that color. Why? Because the color field of Rect is an
-immutable value, so we have to create a new object. Finally, at the end of this new Rect (also, notice the lack of the keyword ```new```: yay
+immutable value, so we have to create a new object. Finally, at the end of this new Rect (also, notice the lack of the keyword ```new```; yay
 case classes) we see that I specifically initialize the optional color argument, by using it's name. This can be done for any amount of optional
 arguments.
+### Implicit
+To declare something as implicit in Scala, you ironically have to explicitly declare that it is implicit using the ```implicit``` keyword. Personally,
+this is a pattern I very much like about Scala. Many late-generation programming languages have a lot of...magic. Doing 'x' will also cause 'y', 'z',
+and 'Billy Bob Thornton' to occur. Huh? I don't get it either. In Scala, if you attempt to go down any magical paths, you must be explicitly declare this.
+So... how can something be both explicit and implicit? Let's find out.
 
+There are four main uses of the ```implicit``` keyword in Scala.
+#### Implicit Conversions
+In any language where you are able to add an Integer to a String, and you are returned a new string with the integer appended on as a character, that integer
+is being implicitly converted into that character. Scala allows you to play with this functionality. Let's stick with a simple example for now:
+```scala
+val i: Int = 3.5
+```
+3.5 defaults to a Double. It could also be represented as 3.5d, d being the literal. What would happen if we ran this code? Answer:
+```scala
+error: type mismatch;
+   found   : Double(3.5)
+   required: Int
+   val i: Int = 3.5
+```
+This is a strongly typed language! So in this case, we can use an declare an implicit conversion that will handle this for us:
+```scala
+implicit def doubleToInt(x: Double) = x.toInt
+val i: Int = 3.5
+```
+So in this case, 'i' would equal 3, thanks to our function above. Why is this implicit? Well, the function was implicitly called. The compiler knew
+to add this conversion. But the best part? We wrote this conversion. It's our implicit conversion. This is not magic. This is convenience.
+
+This can also lead to some cooler, more useful conversions like:
+```scala
+object Dollar {
+    implicit def dollarToEuro(x: Dollar): Euro = ...
+}
+class Dollar { ... }
+```
+You can assume how that would work.
+#### Implicit Values
+Implicit values are simply a play on the concept above. The main difference is that we would be using ```val``` instead of def, and these implicits
+would act more as properties of an object with very specific use cases. A good example would be implicit vals for de-serializing or serializing a class
+conveniently.
+#### Implicit Parameters
+Implicit parameters can be attached to any method or class. They are usually a final set of parameters that are not directly passed in; the compiler
+searches for them within the calling scope.
+```scala
+case class Response()(implicit statusCode: Int)
+def updateGuy(name: String): Response {
+     implicit var statusCode = 200
+     Database.update("guy", name) match { // returns how many rows were affected
+        case 0 =>
+		     statusCode = 400
+     }
+	 Response() // note the implicit return. idiomatic scala code does not use return unless returning a function early
+}
+```
+The status code of that returned response, if the database update was successful, will be 200, and if unsuccessful, will be 400. This is, of course,
+a very simplistic example. The use may not be clear. But consider the fact that you are going to have a series of these CRUD functions -- some with
+some complex logic. And you will always be returning a Response data object, no matter what. And let's add an optional message in there, with an optional
+data return value as well:
+```scala
+case class Response(message: String = null, retVal: AnyRef = null)(impicit statusCode: Int)
+// note that I would use template types instead of AnyRef here, but that is a lesson for another day
+```
+Suddenly, being able to cover that variable that we know we are going to need is a lot more enticing.
+#### Implicit Classes
 ## Play Framework
 For those unfamiliar with the Play Framework, we are given a fair amount of features that act implicitly, but are actually quite explicit once
 you understand the basic protocol we follow for an object.
