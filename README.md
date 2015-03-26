@@ -240,7 +240,7 @@ If that was confusing, please reread this section a second time. It will be much
 Don't like inheritance? Traits are your friends! Do like inheritance? Traits are your friends!
 
 Classic inheritance is great for organizing code by adding a layer of abstraction:
-[!alt tag](http://blogs.perl.org/users/sid_burn/inheritance1.png)
+![alt tag](http://blogs.perl.org/users/sid_burn/inheritance1.png)
 
 I don't think I have to explain classic inheritance. The issues in inheritance arrive when we get here:
 - Dove -> Flying, Walking
