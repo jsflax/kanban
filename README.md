@@ -179,7 +179,7 @@ a very simplistic example. The use may not be clear. But consider the fact that 
 some complex logic. And you will always be returning a Response data object, no matter what. And let's add an optional message in there, with an optional
 data return value as well:
 ```scala
-case class Response(message: String = null, retVal: AnyRef = null)(impicit statusCode: Int)
+case class Response(message: String = null, retVal: AnyRef = null)(implicit statusCode: Int)
 // note that I would use template types instead of AnyRef here, but that is a lesson for another day
 ```
 Suddenly, being able to cover that variable that we know we are going to need is a lot more enticing.
