@@ -9,7 +9,7 @@ a language that does it all. Like OOP? Like functional programming? Have both. H
 I'm happy to say after having worked with this in my personal time (see: at my own leisure), that this language, does, surprisingly work. And it works well. I mean really well. I don't
 want to code in anything else. And not only that -- it's fun. It hasn't felt this good to code since my first real program got released into the public.
 
-Simply put, I cannot teach you the entirety of Scala here. The best place to start would, of course, be the Scala home page: [Scala: Object Oriented Meets Functional](http://www.scala-lang.org/)
+Simply put, I cannot teach you the entirety of Scala here. The best place to start would, of course, be the Scala home page: [Scala: Object Oriented Meets Functional](http://www.scala-lang.org/).
 My goal here is to introduce some of the idioms of Scala, as well as some of the syntactical differences.
 
 As a note: Scala is a strongly typed language. It uses structural typing, as opposed to full on duck typing. You do have a concept of full polymorphism just like
@@ -34,9 +34,9 @@ With the exception of the constructor, that should look quite familiar.
 So what is a case class? Case classes can be seen as plain
 and immutable data-holding objects that should exclusively depend on their constructor arguments. This is, in fact, a functional concept.
 This allows us to:
--use a compact initialisation syntax (Node(1, Leaf(2), None)))
--decompose them using pattern matching
--have equality comparisons implicitly defined
+- use a compact initialisation syntax (Node(1, Leaf(2), None)))
+- decompose them using pattern matching
+- have equality comparisons implicitly defined
 A general rule of them is that if an object performs stateful computations on the inside or exhibits other kinds of
 complex behaviour, it should be an ordinary class.
 ```scala
@@ -71,18 +71,17 @@ case class Rect(left: Int,
 				color: Color = null)
 var newRectangle: Rect = null
 lazy val bigBlueRect = Rect(0,0,500,500,Color.Blue)
-def transferRectangle(rect: Rect) {
+def transferRectangleAsRedRect(rect: Rect) {
     newRectangle = rect
 	if(newRectangle.color != Color.Red) {
 	    newRectangle = Rect(rect.left, rect.top, rect.right, rect.bottom, color=Color.Red)
 	}
 }
 ```
-Why are we dealing with Rectangles? Who knows. That's not the point, man.
 What we have to begin is a case class, with a single optional argument called color. Note that all of these construction args are ```val```.
 This means that these are **immutable** variables. They cannot be changed after a new Rect has been constructed.
 
-From there we have decaled a field in this file called "newRectangle":
+From there we have declared a field in this file called "newRectangle":
 ```scala
 var newRectangle: Rect = null
 ```
@@ -107,14 +106,22 @@ public void getBigBlueRect() {
 It is a very nice optimization feature. The return value can also be a high order function if you would like.
 
 Moving on from there, we have our first ```def```, or, function definition. This function takes a single parameter, rect. Note that all function
-parameters are immutable vals. Inside our function, we immediately set our ```var newRectangle``` to the passed in value. And then, just to prove
+parameters are immutable vals.
+```scala
+def transferRectangleAsRedRect(rect: Rect) {
+    newRectangle = rect
+	if(newRectangle.color != Color.Red) {
+	     newRectangle = Rect(rect.left, rect.top, rect.right, rect.bottom, color=Color.Red)
+	}
+}
+```
+Inside our function, we immediately set our ```var newRectangle``` to the passed in value. And then, just to prove
 a point, if it is not of a certain color, we then create a new rect to change it to that color. Why? Because the color field of Rect is an
 immutable value, so we have to create a new object. Finally, at the end of this new Rect (also, notice the lack of the keyword ```new```: yay
 case classes) we see that I specifically initialize the optional color argument, by using it's name. This can be done for any amount of optional
 arguments.
 
 ## Play Framework
-
 For those unfamiliar with the Play Framework, we are given a fair amount of features that act implicitly, but are actually quite explicit once
 you understand the basic protocol we follow for an object.
 
