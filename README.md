@@ -240,6 +240,7 @@ If that was confusing, please reread this section a second time. It will be much
 Don't like inheritance? Traits are your friends! Do like inheritance? Traits are your friends!
 
 Classic inheritance is great for organizing code by adding a layer of abstraction:
+
 ![alt tag](http://blogs.perl.org/users/sid_burn/inheritance1.png)
 
 I don't think I have to explain classic inheritance. The issues in inheritance arrive when we get here:
@@ -252,7 +253,7 @@ I don't think I have to explain classic inheritance. The issues in inheritance a
 
 Suddenly, we have pre-classified Animals with shared traits and probably a lot of copy and pasted code. Notice how I used the word traits!
 Often times, this is solved with "composition". The Dove would have a "Walking" class as a property of the class. This gets verbose and doesn't
-read how it should read. Composition is a pretty abstract concept. Introducing, traits:
+read how it should read. Composition is a pretty abstract concept, but not abstract in practice. Introducing, traits:
 ```scala
 trait Animal {
 }
