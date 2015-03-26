@@ -15,6 +15,7 @@ My goal here is to introduce some of the idioms of Scala, as well as some of the
 As a note: Scala is a strongly typed language. It uses structural typing, as opposed to full on duck typing. You do have a concept of full polymorphism just like
 Java. However, the Scala ```Any``` class replaces the Java ```Object``` class:
 ![alt tag](http://www.scala-lang.org/old/sites/default/files/images/classhierarchy.png)
+
 It is certainly looser than Java, but not as loose as a true scripting language. As an example, functions do not need to explcitly declare their return types,
 but it is still implicitly in existence. Scala does offer you the ability to write your own implicit conversions, which is quite nice, though I have never
 had the opportunity to use this myself.
@@ -37,6 +38,7 @@ This allows us to:
 - use a compact initialisation syntax (Node(1, Leaf(2), None)))
 - decompose them using pattern matching
 - have equality comparisons implicitly defined
+
 A general rule of them is that if an object performs stateful computations on the inside or exhibits other kinds of
 complex behaviour, it should be an ordinary class.
 ```scala
@@ -182,8 +184,134 @@ data return value as well:
 case class Response(message: String = null, retVal: AnyRef = null)(implicit statusCode: Int)
 // note that I would use template types instead of AnyRef here, but that is a lesson for another day
 ```
-Suddenly, being able to cover that variable that we know we are going to need is a lot more enticing.
+Suddenly, being able to cover that variable that we know we are going to need is a lot more enticing. This gets a lot more useful when tied together
+with the implicit values I mentioned above. It can enable the perfect master-slave relationship between classes, as a sort of replacement for
+interfaces/delegates.
 #### Implicit Classes
+Implicit classes are quite similar, though tie together closely with the classes you import into your file. Take the following code:
+```scala
+object Helpers {
+  implicit class IntWithTimes(x: Int) {
+      def times[A](f: => A): Unit = {
+	        def loop(current: Int): Unit =
+			     if(current > 0) {
+					f
+			        loop(current - 1)
+		         }
+			loop(x)
+		}
+	}
+}
+```
+Let's talk about one thing before we continue. As you can see here, like many other functional languages, you can nest functions with in functions.
+I find this to be *generally* bad practice, especially in the example above. The exception to the rule would be as a replacement for **goto**
+functionality. See the ```KanbanService#returnFullBoardsForUser``` method for an example of the "proper" use of nested functions.
+
+Now that we have that settled, what on Earth is an implicit class? Essentially, it's a shortcut for method calling. For example:
+```scala
+import Helpers._
+5 times println("HI")
+```
+This, obviously, prints "HI" 5 times. So let's look back at our code, because while the result is clear, the methodology may not be.
+```scala
+// code is within an object that can be imported
+implicit class IntWithTimes(x: Int) {
+      def times[A](f: => A): Unit = { ... }
+}
+```
+IntWithTimes is the class we no longer need to worry about *by name*. The only thing to keep in mind is the constructor, which is where we passed
+in our 5, implicitly of course. Moving down to the
+```scala
+times[A](f: => A): Unit = {
+```
+This will be a quick introduction to templating, but do know in advance that it goes much deeper than this. Let's read right to left in this case,
+just for explanation purposes (reading left to right in Scala is generally more appropriate). ```: Unit``` is the equivalent of a ```void``` return in Scala.
+```void``` is not a keyword in Scala. ```f: => A``` means that we are going to be passing a function into this function. Yes, soak that in for a second.
+```f``` is the function where ```A``` is the return type. By passing in a function of return type ```A```, we are implicitly declaring the template ```[A]```
+as type ```A``` as well. This is why we read right to left here. And then the method is called times. So when we have our:
+```scala
+5 times println("HI")
+```
+It should be a bit clearer now exactly what is going on here. ```5``` constructs the class, ```times``` is the method call, and ```println("HI")``` is
+the function we are passing in (which returns type of ```Unit```, making this call return nothing).
+
+If that was confusing, please reread this section a second time. It will be much clearer the second time that you have been initially exposed.
+### Traits
+Don't like inheritance? Traits are your friends! Do like inheritance? Traits are your friends!
+
+Classic inheritance is great for organizing code by adding a layer of abstraction:
+[!alt tag](http://blogs.perl.org/users/sid_burn/inheritance1.png)
+
+I don't think I have to explain classic inheritance. The issues in inheritance arrive when we get here:
+- Dove -> Flying, Walking
+- Tiger -> Walking
+- Penguin -> Walking, Swiming
+- Goldfish -> Swiming
+- Flying Fish -> Swiming, Flying
+- Bat -> Flying
+
+Suddenly, we have pre-classified Animals with shared traits and probably a lot of copy and pasted code. Notice how I used the word traits!
+Often times, this is solved with "composition". The Dove would have a "Walking" class as a property of the class. This gets verbose and doesn't
+read how it should read. Composition is a pretty abstract concept. Introducing, traits:
+```scala
+trait Animal {
+}
+trait Legs {
+     val legs: Int
+}
+trait Wings {
+     val wings: Int
+}
+trait Walking extends Legs {
+     def walk()
+}
+trait Flying extends Wings {
+     def flying()
+}
+class Dove extends Animal 
+              with Flying
+			  with Walking {
+	 val wings: Int = 2
+	 val legs: Int = 2
+	 def walk(){ ... }
+     def flying(){ ... }
+}
+class Tiger extends Animal
+               with Walking {
+     val legs: Int = 2
+	 def walk(){ ... }
+}
+```
+
+What do we have here? Reusable traits! Better yet, explicitly implied compisition. Fun fact: Scala had gotten rid of the ```extends``` keyword entirely in the early releases,
+using only ```with```. However, since basic levels of inheritance do make sense in some cases, ```extends``` was added back in. As you can see, traits read like plain english,
+and work very well in abstracting old paradigms. Look at the ```KanbanService``` class for an more realistic example of how these traits can be incredibly useful. Personally,
+I find that it allows for a much cleaner organization of code. Everything is exactly where it should be. Scala-lang website has another great example:
+```scala
+abstract class Spacecraft {
+  def engage(): Unit
+}
+trait CommandoBridge extends Spacecraft {
+  def engage(): Unit = {
+      for (_ <- 1 to 3)
+	    speedUp()
+  }
+  def speedUp(): Unit
+}
+trait PulseEngine extends Spacecraft {
+  val maxPulse: Int
+  var currentPulse: Int = 0
+  def speedUp(): Unit = {
+	if (currentPulse < maxPulse)
+	   currentPulse += 1
+  }
+}
+class StarCruiser extends Spacecraft
+                     with CommandoBridge
+					 with PulseEngine {
+  val maxPulse = 200
+}
+```				  
 ## Play Framework
 For those unfamiliar with the Play Framework, we are given a fair amount of features that act implicitly, but are actually quite explicit once
 you understand the basic protocol we follow for an object.
