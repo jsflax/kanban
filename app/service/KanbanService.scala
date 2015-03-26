@@ -46,12 +46,12 @@ object KanbanService extends BoardService
 
     def createFullBoard : ServiceResponse[Seq[FullBoard]] = {
       implicit val fullBoards = new mutable.MutableList[FullBoard]()
-      for (board <- authorizedBoards) {
-        val projectsForBoard: Seq[Project] = authorizedProjects.filter(project => project.boardId == board.id.get)
+      for (board <- authorizedBoards) { // iterate through all boards
+        val projectsForBoard: Seq[Project] = authorizedProjects.filter(project => project.boardId == board.id.get) // filter projects for this board
         val fullProjects = new mutable.MutableList[FullProject]()
-        for (project <- projectsForBoard) {
-          val kolumnsForProject: Seq[model.Kolumn] = projectKolumns.filter(kolumn => kolumn.projectId == project.id.get)
-          val ticketsForProject: Seq[model.Ticket] = tickets.filter(ticket => ticket.projectId == project.id.get)
+        for (project <- projectsForBoard) { // iterate through filtered projects
+          val kolumnsForProject: Seq[model.Kolumn] = projectKolumns.filter(kolumn => kolumn.projectId == project.id.get) // filter kolumns for this project
+          val ticketsForProject: Seq[model.Ticket] = tickets.filter(ticket => ticket.projectId == project.id.get) // filter tickets for this project
           fullProjects += FullProject(project, kolumnsForProject, ticketsForProject)
         }
         fullBoards += FullBoard(board, fullProjects, authorizedUsers.filter(user => user.authorizedBoards.get.contains(board.id.get)))

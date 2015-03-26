@@ -18,7 +18,7 @@ object BoardController extends CoreController {
     resultDispatch[MoveTicketValidator, Int](KanbanService.moveTicketToKolumn)
   }
 
-  def bindCollaborator = Action(parse.json) { implicit request =>
+  def bindCollaboratorToTicket = Action(parse.json) { implicit request =>
     resultDispatch[Collaborator, Long](KanbanService.addCollaboratorToTicket)
   }
 
