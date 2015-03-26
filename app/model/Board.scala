@@ -4,8 +4,6 @@ import anorm.{~, RowParser}
 import anorm.SqlParser._
 import org.joda.time.DateTime
 import play.api.libs.json._
-import play.api.libs.json.Reads._ // Custom validation helpers
-import play.api.libs.functional.syntax._ // Combinator syntax
 
 /**
  * Case class for Comments that are attached to tickets and users.
