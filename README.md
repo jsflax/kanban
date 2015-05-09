@@ -1,6 +1,18 @@
 # Kanban
 ![alt tag](https://github.com/jsflax/kanban/blob/master/kanban_map.png)
 
+## Getting Started
+1. Install [sbt](http://www.scala-sbt.org/), the Scala build tool.
+   On OS X, just run `brew install sbt`.
+1. In this app's root directory, execute the `sbt` command. This will
+   take care of installing the Play framework and all dependencies.
+   **This may take a while.**
+1. Set up MySQL dependencies by importing the database fixtures.
+   **TODO add the fixtures to this repo**.
+1. Once in the sbt/play CLI environment, execute `run 8080` (or whatever)
+   port you prefer to run on.
+1. Profit.
+
 ## Migrating to Scala
 
 So you've decided to finally grow up from Java. You don't want to leave the JVM, but you don't want the verbosity of Java, nor the half-cocked languages that followed.
@@ -269,7 +281,7 @@ trait Walking extends Legs {
 trait Flying extends Wings {
      def flying()
 }
-class Dove extends Animal 
+class Dove extends Animal
               with Flying
 			  with Walking {
 	 val wings: Int = 2
@@ -312,7 +324,7 @@ class StarCruiser extends Spacecraft
 					 with PulseEngine {
   val maxPulse = 200
 }
-```				  
+```
 ## Play Framework
 For those unfamiliar with the Play Framework, we are given a fair amount of features that act implicitly, but are actually quite explicit once
 you understand the basic protocol we follow for an object.
