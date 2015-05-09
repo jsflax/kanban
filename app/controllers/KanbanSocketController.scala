@@ -47,9 +47,10 @@ object KanbanSocketController {
       actor ! Json.stringify(Json.obj(
         "action" -> JsString(SocketActions.newProject),
         "data" -> Json.obj(
-        "project" -> Json.toJson(project),
-        "user" -> Json.toJson(user)
-      )))
+          "project" -> Json.toJson(project),
+          "user" -> Json.toJson(user)
+        )
+      ))
     }
   }
 
@@ -57,11 +58,12 @@ object KanbanSocketController {
     Logger.warn("sending new comment")
     connected.get(boardId).get.foreach { actor =>
       actor ! Json.stringify(Json.obj(
-        "action" -> JsString(SocketActions.newTicket),
+        "action" -> JsString(SocketActions.newComment),
         "data" -> Json.obj(
           "comment" -> JsString(comment),
           "user" -> Json.toJson(user),
-          "boardId" -> JsNumber(boardId)
+          "boardId" -> JsNumber(boardId),
+          "ticketId" -> JsNumber(ticketId)
         )
       ))
     }

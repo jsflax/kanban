@@ -2,7 +2,7 @@ window.collaboratorHtml = (collaborator, float) ->
   return "<div class=\"btn avatar\" style=\"float:#{float};background:url(#{collaborator.avatarUrl});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\" data-original-title=\"#{collaborator.username}\"></div>"
 
 window.ticketModalHtml = (ticket) ->
-  return "<div class=\"modal fade ticket-modal\" id=\"activeTicketModal#{ticket.id}\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\" style=\"z-index:1500;\" data-options='{\"id\":#{ticket.id}}\'>
+  return "<div class=\"modal fade ticket-modal\" id=\"activeTicketModal\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\" style=\"z-index:1500;\" data-options='{\"id\":#{ticket.id}}\'>
             <div class=\"modal-dialog\">
               <div class=\"modal-content\">
                 <div class=\"modal-header\">
@@ -42,7 +42,32 @@ window.ticketModalHtml = (ticket) ->
                       </label>
                       <div class=\"col-lg-10\">
                         <textarea class=\"form-control\" rows=\"3\" id=\"inputComment\" name=\"comment\" style=\"outline-color:mediumaquamarine;outline-style:groove;\"></textarea>
-                        <button type=\"button\" class=\"btn btn-primary\" style=\"float:right;margin-right:-5;\">#{Messages("comment")}</button>
+                        <button id=\"commentButton\" type=\"button\" class=\"btn btn-primary\" style=\"float:right;margin-right:-5;\">#{Messages("comment")}</button>
+                        <script>
+                           $(document).ready(function() {
+                              $('#commentButton').on('click', function() {
+                                console.log($('#activeTicketModal').data('options'));
+                                var comment = {
+                                  ticketId: $('#activeTicketModal').data('options').id,
+                                  comment: $('#inputComment').val(),
+                                  userId: currentUser.id
+                                };
+                                console.log(comment);
+                                $.ajax({
+                                  url: '/addComment',
+                                  data: JSON.stringify(comment),
+                                  dataType: 'json',
+                                  contentType: 'application/json;charset=utf-8',
+                                  type: 'POST',
+                                  success: function (data) {
+                                    console.log(data);
+                                    return false;
+                                  }
+                                });
+
+                              });
+                          });
+                        </script>
                       </div>
                     </div>
                   </div>
@@ -60,8 +85,6 @@ window.ticketContentTemplateHtml = (ticket, boardId) ->
       str += "<div class=\"btn avatar\" style=\"background:url(#{collaborator.avatarUrl});\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"\" data-original-title=\"#{collaborator.username}\" data-options=\"{'id':#{ticket.id}, 'board_id':#{boardId}}\"></div>"
 
   str += "</div></br><div>#{Messages("difficulty")}</div><div data-options=\"{'id':#{ticket.id}, 'board_id':#{boardId}}\" class=\"progress progress-striped\">"
-
-  console.log(ticket.priority)
 
   if ticket.difficulty > 0 and ticket.difficulty < 3
     str += "<div class=\"progress-bar progress-bar-info\" data-options=\"{'id':#{ticket.id}, 'board_id':#{boardId}}\" style=\"width : #{ticket.difficulty}0%\"></div>"
@@ -91,6 +114,7 @@ window.ticketContentTemplateHtml = (ticket, boardId) ->
 
   str += "<script>
           $(document).ready(function() {
+            $('#' + \"ticket#{ticket.id}\").off('click');
             $('#' + \"ticket#{ticket.id}\").on('click', function(e) {
               $(ticketModalHtml(ticketMap[#{ticket.id}])).modal();
             });
@@ -163,6 +187,8 @@ window.projectTemplateHtml = (project, k) ->
                       hideButtons();
                       addTicketTooltip.show();
                       addColumnTooltip.show();
+                      addTicketButton.off('click');
+                      addColumnButton.off('click');
                       addTicketButton.on('click', function(){
                         $(newTicketModal(projectId)).modal()
                       });

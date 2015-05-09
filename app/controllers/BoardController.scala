@@ -9,7 +9,6 @@ import service.KanbanService
  * Controller for all actions related to the actual board itself.
  */
 object BoardController extends CoreController {
-
   def createNewTicket = Action(parse.json) { implicit request =>
     resultDispatch[Ticket, Long](KanbanService.insertNewTicket)
   }
@@ -20,6 +19,10 @@ object BoardController extends CoreController {
 
   def bindCollaboratorToTicket = Action(parse.json) { implicit request =>
     resultDispatch[Collaborator, Long](KanbanService.addCollaboratorToTicket)
+  }
+
+  def postCommentToTicket = Action(parse.json) { implicit request =>
+    resultDispatch[CommentItem, Long](KanbanService.addCommentToTicket)
   }
 
   def createNewKolumn = Action(parse.json) { implicit request =>

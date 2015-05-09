@@ -150,33 +150,34 @@ protected trait TicketService {
       SQL(
         s"""
            |SELECT auth_level
-           |FROM user_authorized_boards.user_authorized_boards
+           |FROM user_authorized_boards
            |JOIN ticket
            |JOIN project
-           |WHERE user_authorized_boards.user_id = ${commentItem.userId}
-            |AND (ticket.project_id = ${commentItem.ticketId}
-            |AND project.board_id = user_authorized_boards.board_id)
+           |WHERE user_authorized_boards.user_id = ${commentItem.userId.get}
+           |AND (ticket.project_id = ${commentItem.ticketId.get}
+           |AND project.board_id = user_authorized_boards.board_id)
+           |LIMIT 1
          """.stripMargin
       ).as(scalar[Int].single) match {
         case AuthLevel.SuperAdmin|AuthLevel.Admin|AuthLevel.Contributor =>
           implicit val collaboratorId : Long = SQL(
             s"""
                |INSERT INTO comments(user_id, ticket_id, comment)
-               |VALUES(${commentItem.userId}, ${commentItem.ticketId}, ${commentItem.comment})
-                """.stripMargin
+               |VALUES(${commentItem.userId.get}, ${commentItem.ticketId.get}, "${commentItem.comment.get}")
+             """.stripMargin
           ).executeInsert(scalar[Long].single)
           commentItem.id = Option(collaboratorId)
           KanbanSocketController.newComment(
             commentItem.ticketId.get,
-            SQL(s"SELECT * from user where id=${commentItem.userId}").as(UserBase.userParser.*).head,
-            SQL(s"SELECT board_id from ticket where id=${commentItem.ticketId}").as(scalar[Long].single),
+            SQL(s"SELECT * from user where id=${commentItem.userId.get}").as(UserBase.userParser.*).head,
+            SQL(s"SELECT board_id from project JOIN ticket where ticket.id=${commentItem.ticketId.get} AND project.id=ticket.project_id").as(scalar[Long].single),
             commentItem.comment.get
           )
           ServiceResponse(StatusCode.OK)
         case _ =>
           implicit val error = 0L
           ServiceResponse(StatusCode.IdentifierNotFound,
-            message=s"${commentItem.userId} does not have authorization to add collaborators"
+            message=s"${commentItem.userId} does not have authorization to add comment"
           )
       }
     )
