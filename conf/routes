@@ -27,7 +27,7 @@ POST         /getBoardsForUser              controllers.BoardController.getBoard
 #~ Edit
 PATCH        /moveTicket                    controllers.BoardController.moveTicket
 POST         /userBoardAuthorization        controllers.BoardController.userBoardAuthorization
-POST         /addCollaborator               controllers.BoardController.bindCollaborator
+POST         /addCollaborator               controllers.BoardController.bindCollaboratorToTicket
 # Personnel
 POST         /getUser                       controllers.PersonnelController.getUserInternal
 GET          /getUser                       controllers.PersonnelController.getUserExternal
