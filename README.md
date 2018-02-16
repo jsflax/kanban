@@ -44,12 +44,12 @@ complex behaviour, it should be an ordinary class.
 ```scala
 case class UserBase(email : String,
                     firstName : String,
-					lastName : Option[String],
-				    username : String,
-				    password : String,
-					avatarUrl : Option[String],
-					var authorizedBoards : Option[Set[Long]],
-					var id : Option[Long])
+		    lastName : Option[String],
+		    username : String,
+		    password : String,
+		    avatarUrl : Option[String],
+		    var authorizedBoards : Option[Set[Long]],
+		    var id : Option[Long])
 ```
 As a note, the same constructor syntax here can be used for regular classes.
 #### object
@@ -68,9 +68,9 @@ These are tough concepts to teach individually. It is better to understand them 
 ```scala
 case class Rect(left: Int,
                 top: Int,
-				right: Int,
-				bottom: Int,
-				color: Color = null)
+		right: Int,
+		bottom: Int,
+		color: Color = null)
 var newRectangle: Rect = null
 lazy val bigBlueRect = Rect(0,0,500,500,Color.Blue)
 def transferRectangleAsRedRect(rect: Rect) {
@@ -167,13 +167,12 @@ Implicit parameters can be attached to any method or class. They are usually a f
 searches for them within the calling scope.
 ```scala
 case class Response()(implicit statusCode: Int)
-def updateGuy(name: String): Response {
+def updatePerson(name: String): Response {
      implicit var statusCode = 200
-     Database.update("guy", name) match { // returns how many rows were affected
-        case 0 =>
-		     statusCode = 400
+     Database.update("person", name) match { // returns how many rows were affected
+        case 0 => statusCode = 400
      }
-	 Response() // note the implicit return. idiomatic scala code does not use return unless returning a function early
+     Response() // note the implicit return. idiomatic scala code does not use return unless returning a function early
 }
 ```
 The status code of that returned response, if the database update was successful, will be 200, and if unsuccessful, will be 400. This is, of course,
@@ -271,7 +270,7 @@ trait Flying extends Wings {
 }
 class Dove extends Animal 
               with Flying
-			  with Walking {
+	      with Walking {
 	 val wings: Int = 2
 	 val legs: Int = 2
 	 def walk(){ ... }
@@ -309,7 +308,7 @@ trait PulseEngine extends Spacecraft {
 }
 class StarCruiser extends Spacecraft
                      with CommandoBridge
-					 with PulseEngine {
+		     with PulseEngine {
   val maxPulse = 200
 }
 ```				  
@@ -443,7 +442,7 @@ implicit val collaboratorParser: RowParser[Ticket] = {
   }
 }
 ```
-Kill it with fire! No no, it's not that bad. It should appear familiar to the simple parser: we are doing reads based on type and column name.
+It should appear familiar to the simple parser: we are doing reads based on type and column name.
 The main differences? We are using the table name as a prefix, and the inclusion of the ```UserBase.userParser.?``` line and the
 ```CommentItem.parser.?``` line. All these are are nested row parsers for the JOINed tables. The '?' at the end just means that they can
 be null. Then they are mapped to the object in the same fashion as before.
